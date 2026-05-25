@@ -1,0 +1,6 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "git -C /home/roboticist/Projects/Personal-Development": true,
+        "true": true
+    }
+}
