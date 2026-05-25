@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Project Pulse Dashboard",
+      "type": "python",
+      "request": "launch",
+      "module": "http.server",
+      "args": [
+        "5500"
+      ],
+      "python": "python3",
+      "cwd": "${workspaceFolder}/app",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "serverReadyAction": {
+        "pattern": "Serving HTTP on .* port (\\d+)",
+        "uriFormat": "http://localhost:%s/index.html",
+        "action": "openExternally"
+      }
+    }
+  ]
+}

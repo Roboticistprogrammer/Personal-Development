@@ -1,0 +1,39 @@
+{
+  "projects": [
+    {
+      "name": "Atlas Onboarding",
+      "owner": "Nora Patel",
+      "status": "On Track",
+      "recentActivity": "Completed user journey audit and finalized copy updates.",
+      "priority": "High"
+    },
+    {
+      "name": "Signal Insights",
+      "owner": "Diego Ramos",
+      "status": "At Risk",
+      "recentActivity": "QA reported latency spikes on cohort exports; mitigation in progress.",
+      "priority": "High"
+    },
+    {
+      "name": "Lighthouse Billing",
+      "owner": "Kim Avery",
+      "status": "On Track",
+      "recentActivity": "New invoice templates approved and staged for rollout.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Orbit Mobile",
+      "owner": "Priya Shah",
+      "status": "Delayed",
+      "recentActivity": "Release candidate paused pending accessibility fixes.",
+      "priority": "High"
+    },
+    {
+      "name": "Aurora Integrations",
+      "owner": "Samir Idris",
+      "status": "On Track",
+      "recentActivity": "Partner API contract signed and sandbox access enabled.",
+      "priority": "Low"
+    }
+  ]
+}

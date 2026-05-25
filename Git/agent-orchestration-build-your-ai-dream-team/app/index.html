@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Project Pulse</title>
+    <meta
+      name="description"
+      content="Project Pulse dashboard with live status, priorities, and recent activity."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preload" href="project-data.json" as="fetch" crossorigin />
+  </head>
+  <body>
+    <div class="dashboard">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Portfolio Overview</p>
+          <h1>Project Pulse</h1>
+          <p class="subtitle">
+            A concise view of delivery health, focus areas, and momentum across
+            active initiatives.
+          </p>
+        </div>
+        <div class="header-card">
+          <p class="header-label">Live Snapshot</p>
+          <p class="header-value" id="last-updated">Loading data…</p>
+          <p class="header-subtitle">Auto-refreshed on page load.</p>
+        </div>
+      </header>
+
+      <section class="summary-cards" aria-label="Project health summary">
+        <div class="summary-card">
+          <p class="summary-value" data-stat="total">0</p>
+          <p class="summary-label">Total Projects</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-value" data-stat="onTrack">0</p>
+          <p class="summary-label">On Track</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-value" data-stat="atRisk">0</p>
+          <p class="summary-label">At Risk / Delayed</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-value" data-stat="highPriority">0</p>
+          <p class="summary-label">High Priority</p>
+        </div>
+      </section>
+
+      <section class="projects-section">
+        <div class="section-header">
+          <div>
+            <h2>Active Projects</h2>
+            <p class="section-subtitle">
+              Priorities and activity highlights pulled directly from the
+              delivery stream.
+            </p>
+          </div>
+          <div class="status-legend" aria-label="Status legend">
+            <span class="status-chip status-on-track">On Track</span>
+            <span class="status-chip status-at-risk">At Risk</span>
+            <span class="status-chip status-delayed">Delayed</span>
+          </div>
+        </div>
+
+        <div id="project-grid" class="project-grid" aria-live="polite"></div>
+        <p id="project-error" class="project-error" hidden>
+          Unable to load project data. Please check project-data.json and try
+          again.
+        </p>
+      </section>
+    </div>
+
+    <template id="project-card-template">
+      <article class="project-card">
+        <div class="project-card-header">
+          <h3 class="project-name"></h3>
+          <span class="status-pill"></span>
+        </div>
+        <p class="project-owner"></p>
+        <div class="project-meta">
+          <div class="meta-item">
+            <span class="meta-label">Recent activity</span>
+            <span class="meta-value recent-activity"></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Priority</span>
+            <span class="meta-value priority-badge"></span>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script>
+      const statusClassMap = {
+        'On Track': 'status-on-track',
+        'At Risk': 'status-at-risk',
+        Delayed: 'status-delayed',
+        Blocked: 'status-blocked',
+      };
+
+      const priorityClassMap = {
+        High: 'priority-high',
+        Medium: 'priority-medium',
+        Low: 'priority-low',
+      };
+
+      const grid = document.getElementById('project-grid');
+      const template = document.getElementById('project-card-template');
+      const errorMessage = document.getElementById('project-error');
+      const lastUpdated = document.getElementById('last-updated');
+
+      const updateSummary = (projects) => {
+        const stats = {
+          total: projects.length,
+          onTrack: projects.filter((project) => project.status === 'On Track')
+            .length,
+          atRisk: projects.filter(
+            (project) =>
+              project.status === 'At Risk' || project.status === 'Delayed'
+          ).length,
+          highPriority: projects.filter(
+            (project) => project.priority === 'High'
+          ).length,
+        };
+
+        document.querySelectorAll('[data-stat]').forEach((element) => {
+          const key = element.dataset.stat;
+          if (Object.prototype.hasOwnProperty.call(stats, key)) {
+            element.textContent = stats[key];
+          }
+        });
+      };
+
+      const createProjectCard = (project) => {
+        const fragment = template.content.cloneNode(true);
+        const card = fragment.querySelector('.project-card');
+        const statusPill = fragment.querySelector('.status-pill');
+        const priorityBadge = fragment.querySelector('.priority-badge');
+
+        fragment.querySelector('.project-name').textContent = project.name;
+        fragment.querySelector(
+          '.project-owner'
+        ).textContent = `Owner: ${project.owner}`;
+        fragment.querySelector('.recent-activity').textContent =
+          project.recentActivity;
+        priorityBadge.textContent = project.priority;
+        statusPill.textContent = project.status;
+
+        const statusClass = statusClassMap[project.status] || 'status-on-track';
+        const priorityClass =
+          priorityClassMap[project.priority] || 'priority-medium';
+
+        card.classList.add(statusClass);
+        statusPill.classList.add(statusClass);
+        priorityBadge.classList.add(priorityClass);
+
+        return fragment;
+      };
+
+      fetch('project-data.json')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to load project data (${response.status})`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data.projects || !Array.isArray(data.projects)) {
+            throw new Error('Invalid project data format');
+          }
+
+          grid.innerHTML = '';
+          data.projects.forEach((project) => {
+            grid.appendChild(createProjectCard(project));
+          });
+          updateSummary(data.projects);
+          lastUpdated.textContent = new Date().toLocaleString();
+        })
+        .catch((error) => {
+          console.error(error);
+          errorMessage.hidden = false;
+          lastUpdated.textContent = 'Data unavailable';
+        });
+    </script>
+  </body>
+</html>
