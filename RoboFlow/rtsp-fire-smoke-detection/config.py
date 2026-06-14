@@ -1,0 +1,7 @@
+API_KEY = "$ROBOFLOW_API_KEY"
+MODEL_ID = "wildfire-detection-uakkp/3"
+INFERENCE_SERVER_URL = "http://localhost:9001"
+RTSP_URL = "rtsp://localhost:8554/stream"
+CONFIDENCE_THRESHOLD = 0.4
+WATCHDOG_TIMEOUT = 10
+RECONNECT_DELAY = 5
